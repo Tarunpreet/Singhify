@@ -2,7 +2,7 @@ package com.Singhify.Singhify.Services;
 
 import com.Singhify.Singhify.Constants.AppConstants;
 import com.Singhify.Singhify.Controllers.CategoriesController;
-import com.Singhify.Singhify.Data.APIResponse;
+import com.Singhify.Singhify.Data.PaginatedAPIResponse;
 import com.Singhify.Singhify.Data.DTO.CategoryDTO;
 import com.Singhify.Singhify.Exception.EntityNotFoundException;
 import com.Singhify.Singhify.Models.Category;
@@ -29,7 +29,7 @@ public class CategoriesServices {
     @Autowired
     ModelMapper mapper;
     @Autowired
-    APIResponse<CategoryDTO> categoryResponse;
+    PaginatedAPIResponse<CategoryDTO> categoryResponse;
     @Autowired
     MappingData<Category,CategoryDTO> mapData;
 
@@ -66,7 +66,7 @@ public class CategoriesServices {
         return mapper.map(existingCategory, CategoryDTO.class);
     }
 
-    public APIResponse<CategoryDTO> getCategories(int pageNumber, int pageSize, String sortType, String sortDir){
+    public PaginatedAPIResponse<CategoryDTO> getCategories(int pageNumber, int pageSize, String sortType, String sortDir){
 
         Sort sort=sortDir.equalsIgnoreCase(AppConstants.pageAsc)?Sort.by(sortType).ascending():Sort.by(sortType).descending();
         Pageable pageDetails= PageRequest.of(pageNumber,pageSize,sort);

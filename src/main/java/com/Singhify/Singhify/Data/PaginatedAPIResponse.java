@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Component
-public class APIResponse<T> {
+public class PaginatedAPIResponse<T> {
     private List<T> content;
     int pageNo;
     int pageSize;

@@ -1,7 +1,7 @@
 package com.Singhify.Singhify.Controllers;
 
 import com.Singhify.Singhify.Constants.AppConstants;
-import com.Singhify.Singhify.Data.APIResponse;
+import com.Singhify.Singhify.Data.PaginatedAPIResponse;
 import com.Singhify.Singhify.Data.DTO.CategoryDTO;
 import com.Singhify.Singhify.Services.CategoriesServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/api")
 
 public class CategoriesController {
 
@@ -21,14 +21,14 @@ public class CategoriesController {
     private static final Logger logger = LoggerFactory.getLogger(CategoriesController.class);
 
 
-    @PostMapping("addCategory")
+    @PostMapping("/admin/addCategory")
     public ResponseEntity<String> addCategory(@RequestBody CategoryDTO categoryDTO)
     {
         logger.info("Received request to add category: " + categoryDTO);
        categoriesServices.addCategory( categoryDTO);
        return new ResponseEntity<>("Category Added", HttpStatus.CREATED);
     }
-    @PutMapping("updateCategory/{id}")
+    @PutMapping("/admin/updateCategory/{id}")
     public ResponseEntity<CategoryDTO> updateCategory(@PathVariable int id, @RequestBody CategoryDTO categoryDTO)
     {
         logger.info("Received request to update category with id: " + id);
@@ -37,13 +37,13 @@ public class CategoriesController {
     }
 
     @GetMapping("getCategories")
-    public ResponseEntity<APIResponse<CategoryDTO>> getCategories(
+    public ResponseEntity<PaginatedAPIResponse<CategoryDTO>> getCategories(
             @RequestParam (name = "pageNumber",required = false,defaultValue = AppConstants.pageNumber) int pageNumber,
             @RequestParam (name = "pageSize",required = false,defaultValue = AppConstants.pageSize) int pageSize,
             @RequestParam (name = "sortType",required = false,defaultValue = "createdAt") String sortType,
             @RequestParam (name = "sortDir",required = false,defaultValue = AppConstants.pageDesc) String sortDir)
     {
-        APIResponse<CategoryDTO> allCategories=categoriesServices.getCategories(pageNumber,pageSize,sortType,sortDir);
+        PaginatedAPIResponse<CategoryDTO> allCategories=categoriesServices.getCategories(pageNumber,pageSize,sortType,sortDir);
         return new ResponseEntity<>(allCategories, HttpStatus.OK);
 
     }
@@ -54,7 +54,7 @@ public class CategoriesController {
         return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
 
     }
-    @DeleteMapping("deleteCategory/{id}")
+    @DeleteMapping("/admin/deleteCategory/{id}")
     public ResponseEntity<String> deleteCategory(@PathVariable int id)
     {
          categoriesServices.deleteCategory(id);
