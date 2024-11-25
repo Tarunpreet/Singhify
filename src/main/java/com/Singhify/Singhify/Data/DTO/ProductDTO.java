@@ -6,12 +6,15 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Component
 public class ProductDTO {
 
     private long id;
@@ -20,13 +23,15 @@ public class ProductDTO {
 
     private int quantity;
 
-    private String image;
 
-    private int price;
+    private String productImage;
 
-    private int discountAmt;
+    private double price;
 
-    private  int discountperc;
+    private double discountperc;
+
+    private double discountAmt;
+
 
     private int sellingPrice;
 

@@ -3,10 +3,10 @@ package com.Singhify.Singhify.Models;
 
 import jakarta.annotation.ManagedBean;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import lombok.*;
+
 
 import java.time.LocalDateTime;
 
@@ -24,20 +24,26 @@ public class Product {
     @Column(nullable = false)
     private String productName;
 
+
+    private String productImage;
+
     @Column(nullable = false)
-    private int price;
+    @Min(0)
+    private double price;
 
     @Column(nullable = false)
     private int quantity;
 
     @Column
-    private int discountAmt;
+    private double discountAmt;
 
     @Column
-    private  int discountperc;
+    @Min(0)
+    @Max(100)
+    private  double discountperc=0;
 
     @Column(nullable = false)
-    private int sellingPrice;
+    private  double sellingPrice;
 
     @Column
     private String description;
