@@ -2,13 +2,14 @@ package com.Singhify.Singhify.Services;
 
 import com.Singhify.Singhify.Constants.AppConstants;
 import com.Singhify.Singhify.Data.DTO.ProductDTO;
-import com.Singhify.Singhify.Data.PaginatedAPIResponse;
+import com.Singhify.Singhify.APIResponses.PaginatedAPIResponse;
 import com.Singhify.Singhify.Exception.EntityNotFoundException;
 import com.Singhify.Singhify.Models.Category;
 import com.Singhify.Singhify.Models.Product;
 import com.Singhify.Singhify.Repos.CategoriesRepo;
 import com.Singhify.Singhify.Repos.ProductRepo;
 import com.Singhify.Singhify.Utilities.MappingData;
+import com.Singhify.Singhify.Utilities.PaginationValid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,9 +17,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductServices {
@@ -36,10 +41,10 @@ public class ProductServices {
     MappingData<Product,ProductDTO> mappingProductData;
 
 
-    public ProductDTO addProduct(Product product,int categoryId)
-    {
+    public ProductDTO addProduct(Product product, MultipartFile imageFile, int categoryId) throws IOException {
         Category category=categoriesRepo.findById(categoryId).
                 orElseThrow(()->new EntityNotFoundException("Category","id",categoryId));
+
 
         product.setCategory(category);
         double discountAmt=0;
@@ -48,17 +53,53 @@ public class ProductServices {
         }
         product.setDiscountAmt(discountAmt);
         product.setSellingPrice(product.getPrice()-product.getDiscountAmt());
-        product.setProductImage("iMac.png");
+
         product.setCreatedAt(LocalDateTime.now());
+        product.setProductImage("placeholder");
         Product savedProduct=productRepo.save(product);
+
+        String imagePath="Products";
+//                + File.separator+savedProduct.getId();
+        String savedImageName=saveImage(imagePath,imageFile);
+        product.setProductImage(savedImageName);
+
+        savedProduct=productRepo.save(product);
+
         ProductDTO productDTO=new ProductDTO();
         mapper.map(savedProduct,productDTO);
         return productDTO;
     }
 
+    private String saveImage(String imagePath, MultipartFile imageFile) throws IOException {
+        String originalFileName = imageFile.getOriginalFilename();
+        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
+
+        String uniqueFileName = UUID.randomUUID() + fileExtension;
+
+
+        String fullPath=AppConstants.imageRootDirPath +imagePath;
+        System.out.println(fullPath);
+
+        File imageDir=new File(fullPath);
+        if(!imageDir.exists())
+        {
+            boolean created=imageDir.mkdir();
+            if(!created)
+            {
+                throw  new IOException("Not able to create Image Dir ");
+            }
+
+        }
+        File imageFileOnDisk = new File(imageDir,uniqueFileName);
+        imageFile.transferTo(imageFileOnDisk);
+        return uniqueFileName;
+
+    }
+
     public PaginatedAPIResponse<ProductDTO> getAllProducts(int pageNumber,int pageSize
                                                          ,String sortType,String sortDir)
     {
+        PaginationValid.checkParameters(pageSize,pageNumber);
         Sort sort=sortDir.equalsIgnoreCase(AppConstants.pageAsc)?Sort.by(sortType).ascending():Sort.by(sortType).descending();
         Pageable pageDetails= PageRequest.of(pageNumber,pageSize,sort);
 
@@ -78,6 +119,7 @@ public class ProductServices {
     public PaginatedAPIResponse<ProductDTO> getProductsByCategory(int pageNumber,int pageSize
             ,String sortType,String sortDir,int categoryId)
     {
+        PaginationValid.checkParameters(pageSize,pageNumber);
         Category category=categoriesRepo.findById(categoryId).
                 orElseThrow(()->new EntityNotFoundException("Category","id",categoryId));
 
@@ -100,8 +142,9 @@ public class ProductServices {
     }
 
     public PaginatedAPIResponse<ProductDTO> getProductsByKeyword(int pageNumber, int pageSize, String sortType,
-                                                                 String sortDir, String keyword) {
-
+                                                                 String sortDir, String keyword)
+    {
+        PaginationValid.checkParameters(pageSize,pageNumber);
         Sort sort=sortDir.equalsIgnoreCase(AppConstants.pageAsc)?Sort.by(sortType).ascending():Sort.by(sortType).descending();
         Pageable pageDetails= PageRequest.of(pageNumber,pageSize,sort);
 
@@ -118,4 +161,56 @@ public class ProductServices {
         return mappingProductData.mappingPageMetaData(productsPage,paginatedProductResponse);
 
     }
+    public ProductDTO updateProduct(long productId, ProductDTO productDTO, MultipartFile imagefile) throws IOException {
+        Product product=productRepo.findById(productId).
+                orElseThrow(()->new EntityNotFoundException("Product","id",productId));
+        // Update fields only if new values are provided
+        if (productDTO.getProductName() != null) {
+            product.setProductName(productDTO.getProductName());
+        }
+        if (productDTO.getDescription() != null) {
+            product.setDescription(productDTO.getDescription());
+        }
+        if(productDTO.getPrice()!=0.0)
+        {
+            product.setPrice(productDTO.getPrice());
+
+        }
+        String savedImage=product.getProductImage();
+        if(imagefile!=null)
+        {
+            String imagePath="Products";
+//                + File.separator+savedProduct.getId();
+            String savedImageName=saveImage(imagePath,imagefile);
+            product.setProductImage(savedImageName);
+            String prevImage=AppConstants.imageRootDirPath+imagePath+File.separator+savedImage;
+            File prevImagefile=new File(prevImage);
+            prevImagefile.delete();
+        }
+        double discountAmt=0;
+        //When price and Discount modified
+        if (productDTO.getDiscountperc() != 0.0) {
+            discountAmt = (double) (product.getPrice() * (productDTO.getDiscountperc() / 100.0));
+            product.setDiscountperc(productDTO.getDiscountperc());
+            product.setDiscountAmt(discountAmt);
+        }
+        //When price modified but disount not
+        else {
+            discountAmt = (double) (product.getPrice() * (product.getDiscountperc() / 100.0));
+            product.setDiscountAmt(discountAmt);
+        }
+        product.setSellingPrice(product.getPrice()-product.getDiscountAmt());
+        product.setUpdatedAt(LocalDateTime.now());
+        Product updatedProduct=productRepo.save(product);
+        return mapper.map(updatedProduct,ProductDTO.class);
+    }
+
+    public void deleteProduct(long productId) {
+        Product product=productRepo.findById(productId).
+                orElseThrow(()->new EntityNotFoundException("Product","id",productId));
+
+        productRepo.delete(product);
+
+    }
 }
+

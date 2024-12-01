@@ -1,4 +1,4 @@
-package com.Singhify.Singhify.Error;
+package com.Singhify.Singhify.APIResponses;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

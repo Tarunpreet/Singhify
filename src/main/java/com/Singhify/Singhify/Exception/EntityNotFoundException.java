@@ -4,8 +4,8 @@ public class EntityNotFoundException extends RuntimeException{
 
     private String resourceName;
     private String fieldName;
-    private int fieldValue;
-    private String fieldValueStr;
+    private String fieldValue;
+
 
     public EntityNotFoundException(String resourceName)
     {
@@ -13,19 +13,12 @@ public class EntityNotFoundException extends RuntimeException{
         this.resourceName=resourceName;
     }
 
-    public EntityNotFoundException(String resourceName,String fieldName,int fieldValue)
-    {
-       super(resourceName+" not found with "+fieldName+":"+fieldValue);
-       this.resourceName=resourceName;
-       this.fieldName=fieldName;
-       this.fieldValue=fieldValue;
-    }
-    public EntityNotFoundException(String resourceName,String fieldName,String fieldValue)
-    {
-        super(resourceName+" not found with "+fieldName+":"+fieldValue);
-        this.resourceName=resourceName;
-        this.fieldName=fieldName;
-        this.fieldValueStr=fieldValue;
+
+    public EntityNotFoundException(String resourceName, String fieldName, Object fieldValue) {
+        super(resourceName + " not found with " + fieldName + ": " + fieldValue);
+        this.resourceName = resourceName;
+        this.fieldName = fieldName;
+        this.fieldValue = String.valueOf(fieldValue);
     }
 
 }

@@ -10,10 +10,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ProductRepo extends JpaRepository<Product,Long> {
+public interface ProductRepo extends JpaRepository<Product, Long> {
 
+    // Method to find products by category with pagination
     Page<Product> findByCategory(Category category, Pageable pageDetails);
 
-    @Query("select S from product where S.productName LIKE %:keyword%")
-    Page<Product> findByKeyword(@Param("keyword")String keyword, Pageable pageDetails);
+    // Method for keyword-based search with pagination
+    @Query("SELECT p FROM Product p WHERE p.productName LIKE %:keyword%")
+    Page<Product> findByKeyword(@Param("keyword") String keyword, Pageable pageDetails);
 }

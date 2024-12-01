@@ -1,9 +1,8 @@
 package com.Singhify.Singhify.Controllers;
 
 import com.Singhify.Singhify.Constants.AppConstants;
-import com.Singhify.Singhify.Data.DTO.CategoryDTO;
 import com.Singhify.Singhify.Data.DTO.ProductDTO;
-import com.Singhify.Singhify.Data.PaginatedAPIResponse;
+import com.Singhify.Singhify.APIResponses.PaginatedAPIResponse;
 import com.Singhify.Singhify.Models.Product;
 import com.Singhify.Singhify.Services.ProductServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Controller
 @RequestMapping("/api")
@@ -20,10 +22,10 @@ public class ProductsController {
     private ProductServices productServices;
 
     @PostMapping("/admin/{categoryId}/addProduct")
-    public ResponseEntity<ProductDTO> addProduct(@RequestBody Product product
-                                            ,@PathVariable int categoryId)
-    {
-        ProductDTO productDTO=productServices.addProduct(product,categoryId);
+    public ResponseEntity<ProductDTO> addProduct(@RequestPart Product product
+                                                 , @RequestPart MultipartFile imagefile,
+                                             @PathVariable int categoryId) throws IOException {
+        ProductDTO productDTO=productServices.addProduct(product, imagefile,categoryId);
         return new ResponseEntity<>(productDTO, HttpStatus.CREATED);
     }
     @GetMapping("/public/getProducts")
@@ -49,7 +51,7 @@ public class ProductsController {
         return new ResponseEntity<>(allProducts, HttpStatus.OK);
 
     }
-    @GetMapping("/public/products")
+    @GetMapping("/public/Products")
     public ResponseEntity<PaginatedAPIResponse<ProductDTO>> getProductsByKeyword(
             @RequestParam String keyword,
             @RequestParam (name = "pageNumber",required = false,defaultValue = AppConstants.pageNumber) int pageNumber,
@@ -61,6 +63,16 @@ public class ProductsController {
         return new ResponseEntity<>(allProducts, HttpStatus.FOUND);
 
     }
-
+    @PutMapping("/admin/product/{productId}/update")
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable long productId,@RequestPart ProductDTO productDTO,@RequestPart(required = false) MultipartFile imagefile) throws IOException {
+        ProductDTO updatedDTO=productServices.updateProduct(productId,productDTO,imagefile);
+        return new ResponseEntity<>(updatedDTO, HttpStatus.OK);
+    }
+   @DeleteMapping("/admin/product/{productId}/delete")
+   public ResponseEntity<String> deleteProduct(@PathVariable long productId)
+   {
+       productServices.deleteProduct(productId);
+       return new ResponseEntity<>("Product Deleted", HttpStatus.NO_CONTENT);
+   }
 
 }

@@ -1,7 +1,7 @@
 package com.Singhify.Singhify.Controllers;
 
 import com.Singhify.Singhify.Constants.AppConstants;
-import com.Singhify.Singhify.Data.PaginatedAPIResponse;
+import com.Singhify.Singhify.APIResponses.PaginatedAPIResponse;
 import com.Singhify.Singhify.Data.DTO.CategoryDTO;
 import com.Singhify.Singhify.Services.CategoriesServices;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -26,9 +26,9 @@ public class ProductDTO {
 
     private String productImage;
 
-    private double price;
+    private double price=0.0;
 
-    private double discountperc;
+    private double discountperc=0.0;
 
     private double discountAmt;
 

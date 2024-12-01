@@ -1,4 +1,4 @@
-package com.Singhify.Singhify.Data;
+package com.Singhify.Singhify.APIResponses;
 
 
 import lombok.AllArgsConstructor;

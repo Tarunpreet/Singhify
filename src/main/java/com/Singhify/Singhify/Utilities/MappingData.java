@@ -1,6 +1,6 @@
 package com.Singhify.Singhify.Utilities;
 
-import com.Singhify.Singhify.Data.PaginatedAPIResponse;
+import com.Singhify.Singhify.APIResponses.PaginatedAPIResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
