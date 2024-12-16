@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.*;
+import org.apache.catalina.User;
 
 
 import java.time.LocalDateTime;
@@ -64,6 +65,8 @@ public class Product {
     @Column(nullable = false,updatable = false)
     private String createdBy;
 
-
+    @ManyToOne()
+    @JoinColumn(name="seller_id")
+    private Users user;
 
 }
