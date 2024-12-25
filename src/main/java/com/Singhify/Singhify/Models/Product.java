@@ -1,6 +1,7 @@
 package com.Singhify.Singhify.Models;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.annotation.ManagedBean;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -10,6 +11,8 @@ import org.apache.catalina.User;
 
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -67,6 +70,12 @@ public class Product {
 
     @ManyToOne()
     @JoinColumn(name="seller_id")
+    @JsonBackReference
     private Users user;
+
+    @OneToMany(mappedBy = "product")
+    @ToString.Exclude
+    @JsonBackReference
+   private List<CartItems> cartItems=new ArrayList<>();
 
 }

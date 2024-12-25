@@ -212,5 +212,10 @@ public class ProductServices {
         productRepo.delete(product);
 
     }
+
+    public Product getProductById(Long productId) {
+        return productRepo.findById(productId).
+                orElseThrow(()->new EntityNotFoundException("Product","Id",productId));
+    }
 }
 

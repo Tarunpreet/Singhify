@@ -1,13 +1,13 @@
 package com.Singhify.Singhify.Services;
 
+import com.Singhify.Singhify.Data.DTO.SignInDTO;
 import com.Singhify.Singhify.Data.DTO.UserDTO;
 import com.Singhify.Singhify.Models.Users;
 import com.Singhify.Singhify.Repos.UserRepository;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +35,23 @@ public class UserServices {
         userRepository.save(saveUser);
     }
 
-    public Boolean verifyUser(UserDTO userDTO) {
-          return authenticationService.authenticate(userDTO);
+    public SignInDTO verifyUser(String[] credDetails) {
+        Users user=userRepository.findByUserName(credDetails[0]);
+          return authenticationService.authenticate(user,credDetails);
         }
+    public String getLoggedInUserName()
+    {
+        Authentication auth= SecurityContextHolder.getContext().getAuthentication();
+        User loggedInUser= (User) auth.getPrincipal();
+        String name=loggedInUser.getUsername();
+        return name;
+    }
+    public Users getLoggedInUserId()
+    {
+        Authentication auth= SecurityContextHolder.getContext().getAuthentication();
+        User loggedInUser= (User) auth.getPrincipal();
+        String name=loggedInUser.getUsername();
+        Users loggedInUserDb=userRepository.findByUserName(name);
+        return loggedInUserDb;
+    }
 }

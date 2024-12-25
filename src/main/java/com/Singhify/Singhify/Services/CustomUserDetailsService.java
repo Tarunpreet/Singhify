@@ -2,6 +2,7 @@ package com.Singhify.Singhify.Services;
 
 import com.Singhify.Singhify.Models.Users;
 import com.Singhify.Singhify.Repos.UserRepository;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +21,9 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         Users user=userRepository.findByUserName(username);
         if (user == null) {
-            throw new UsernameNotFoundException("User not found with username: " + username);
+
+                return null;
+
         }
           return  User.builder().
                     username(username)

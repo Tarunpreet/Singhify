@@ -1,13 +1,22 @@
 package com.Singhify.Singhify.Controllers;
 
 
+import com.Singhify.Singhify.Data.DTO.SignInDTO;
 import com.Singhify.Singhify.Data.DTO.UserDTO;
+import com.Singhify.Singhify.Models.Users;
+import com.Singhify.Singhify.Services.CustomUserDetailsService;
 import com.Singhify.Singhify.Services.UserServices;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.Base64;
 
 @Controller
 public class UserController {
@@ -24,18 +33,23 @@ public class UserController {
         return new ResponseEntity<>("User Added", HttpStatus.OK);
     }
     @PostMapping("/auth/signin")
-    public ResponseEntity<String> verifyUser(@RequestBody UserDTO userDTO)
-    {
-       Boolean Succesfull= userServices.verifyUser(userDTO);
-        if(Succesfull)
+    public ResponseEntity<SignInDTO> verifyUser(HttpServletRequest request) {
+
         {
-            return new ResponseEntity<>("Successful Login!",HttpStatus.OK);
+            String token = null;
+           String[] credDetials=getDetailsFromHeader(request.getHeader("Authorization"));
+           SignInDTO signInDTO = userServices.verifyUser(credDetials);
+           return new ResponseEntity<>(signInDTO, HttpStatus.OK);
 
         }
 
-        return new ResponseEntity<>("Invalid Creds!",HttpStatus.UNAUTHORIZED);
+
     }
 
-
-
+    private String[] getDetailsFromHeader(String authorization) {
+        String token=authorization.substring(6);
+       String decodedToken=new String(Base64.getDecoder().decode(token));
+       String[] credDetails=decodedToken.split(":");
+       return credDetails;
+    }
 }

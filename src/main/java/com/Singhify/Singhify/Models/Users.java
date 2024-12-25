@@ -1,15 +1,15 @@
 package com.Singhify.Singhify.Models;
 
 import com.Singhify.Singhify.Enum.Roles;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 import org.hibernate.engine.internal.Cascade;
 
 import java.util.HashSet;
@@ -24,36 +24,38 @@ public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int userId;
+    private int userId;
 
     @NotBlank
     @NotNull
-    String userName;
-
+    private String userName;
 
     @NotBlank
     @NotNull
     @Email
-
-    String UserEmail;
+    private String userEmail;
 
     @NotNull
-    @Size(max = 10,min = 10)
-    String  userPhone;
+    @Size(max = 10, min = 10)
+    private String userPhone;
 
     @NotNull
     @NotBlank
-    @Size(max = 15,min = 5)
-    String  userPassword;
+    @Size(max = 15, min = 5)
+    private String userPassword;
 
-    @ElementCollection(targetClass = Roles.class,fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = Roles.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "userId"))
-    private Set<Roles> userRoles=new HashSet<>();
+    private Set<Roles> userRoles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user",
-            cascade = {CascadeType.MERGE,CascadeType.PERSIST},
-            orphanRemoval = true)
+    @ToString.Exclude
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private Set<Product> products;
+
+    @ToString.Exclude
+    @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @JsonIgnoreProperties({"cart"})
+    private Cart cart;
 
 }
