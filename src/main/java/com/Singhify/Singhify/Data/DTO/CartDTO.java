@@ -1,6 +1,7 @@
 package com.Singhify.Singhify.Data.DTO;
 
 
+import com.Singhify.Singhify.APIResponses.PaginatedAPIResponse;
 import com.Singhify.Singhify.Models.CartItems;
 import com.Singhify.Singhify.Models.Product;
 import com.Singhify.Singhify.Models.Users;
@@ -30,7 +31,7 @@ public class CartDTO {
     private int cartId;
     private int userId;
     @JsonManagedReference
-    private List<CartItemDTO> cartItemDtos;
+    private PaginatedAPIResponse<CartItemDTO> cartItemDtos;
     private Double totalPrice=0.0;
 
 }

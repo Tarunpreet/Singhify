@@ -69,4 +69,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(error.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(ParameternotValid.class)
+    public ResponseEntity<String> handleParameterNotValid(ParameternotValid exception) {
+        ErrorStruct error = new ErrorStruct(
+                exception.getMessage(),
+                400,
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
+    }
 }
