@@ -79,4 +79,13 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(NotValid.class)
+    public ResponseEntity<String> handleParameterNotValid(NotValid exception) {
+        ErrorStruct error = new ErrorStruct(
+                exception.getMessage(),
+                400,
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(error.toString(), HttpStatus.BAD_REQUEST);
+    }
 }

@@ -30,7 +30,6 @@ public class CartDTO {
 
     private int cartId;
     private int userId;
-    @JsonManagedReference
     private PaginatedAPIResponse<CartItemDTO> cartItemDtos;
     private Double totalPrice=0.0;
 

@@ -13,6 +13,7 @@ import lombok.*;
 import org.hibernate.engine.internal.Cascade;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -24,7 +25,7 @@ public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int userId;
+    private long userId;
 
     @NotBlank
     @NotNull
@@ -58,4 +59,6 @@ public class Users {
     @JsonIgnoreProperties({"cart"})
     private Cart cart;
 
+    @OneToMany(mappedBy = "user",cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, orphanRemoval = true)
+    private List<Address> addressList;
 }

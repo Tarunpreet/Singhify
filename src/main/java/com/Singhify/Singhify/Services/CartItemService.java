@@ -160,4 +160,56 @@ public class CartItemService {
         Page<CartItems> cartItems=cartItemsRepo.findByCart_CartId(cart.getCartId(),pageDetails);
         return cartItems;
     }
+
+    public List<Cart> updateProduct(Product product) {
+        List<CartItems> cartItems=cartItemsRepo.findByProduct_Id(product.getId());
+        if(cartItems==null)
+        {
+            return null;
+        }
+
+        List<Cart> carts=cartItems.stream().map(item->reducePrice(item)).toList();
+        List<Cart> updatedCarts = new ArrayList<>();
+
+        for(CartItems cartItem: cartItems)
+        {
+
+              if(cartItem.getQuantity()> product.getQuantity())
+              {
+                  cartItem.setQuantity(product.getQuantity());
+              }
+            cartItem.setPrice(cartItem.getQuantity()*product.getSellingPrice());
+             CartItems updatedCartItem= cartItemsRepo.save(cartItem);
+             Cart cart=updatedCartItem.getCart();
+             cart.setTotalPrice(cart.getTotalPrice()+ updatedCartItem.getPrice());
+             updatedCarts.add(cart);
+        }
+
+
+
+        return updatedCarts;
+    }
+
+    private Cart reducePrice(CartItems item) {
+        Cart cart=item.getCart();
+        cart.setTotalPrice(cart.getTotalPrice()- item.getPrice());
+        return cart;
+    }
+
+    public List<Cart> deleteProduct(Product product) {
+
+        List<CartItems> cartItems=cartItemsRepo.findByProduct_Id(product.getId());
+        if(cartItems==null)
+        {
+            return null;
+        }
+        cartItems.forEach(cartItem -> {
+            cartItem.setProduct(null);
+            cartItem.setValid(false);
+            cartItemsRepo.save(cartItem);
+        });
+
+        List<Cart> carts=cartItems.stream().map(item->reducePrice(item)).toList();
+        return carts;
+    }
 }

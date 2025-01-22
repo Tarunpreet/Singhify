@@ -21,7 +21,7 @@ public class ProductsController {
     @Autowired
     private ProductServices productServices;
 
-    @PostMapping("/admin/{categoryId}/addProduct")
+    @PostMapping("/admin/{categoryId}/addProductsFromCart")
     public ResponseEntity<ProductDTO> addProduct(@RequestPart Product product
                                                  , @RequestPart MultipartFile imagefile,
                                              @PathVariable int categoryId) throws IOException {

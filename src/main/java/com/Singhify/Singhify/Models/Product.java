@@ -2,6 +2,7 @@ package com.Singhify.Singhify.Models;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.annotation.ManagedBean;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
@@ -76,6 +77,13 @@ public class Product {
     @OneToMany(mappedBy = "product")
     @ToString.Exclude
     @JsonBackReference
-   private List<CartItems> cartItems=new ArrayList<>();
+    @JsonIgnoreProperties
+    private List<CartItems> cartItems=new ArrayList<>();
+
+    @OneToMany(mappedBy = "product")
+    @ToString.Exclude
+    @JsonBackReference
+    @JsonIgnoreProperties
+    private List<CartItems> orderItems=new ArrayList<>();
 
 }

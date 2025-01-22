@@ -32,7 +32,7 @@ public class CartController {
         return new ResponseEntity<>(cartDTO, HttpStatus.OK);
     }
 
-    @PostMapping("/addProduct/{productId}/quantity/{quantity}")
+    @PostMapping("/addProductsFromCart/{productId}/quantity/{quantity}")
     public ResponseEntity<CartDTO> addProductInCart(@PathVariable Long productId,
                                                     @PathVariable int quantity)
     {

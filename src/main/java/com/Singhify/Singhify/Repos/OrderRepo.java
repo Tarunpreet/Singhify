@@ -1,11 +1,10 @@
 package com.Singhify.Singhify.Repos;
 
-import com.Singhify.Singhify.Models.Cart;
+import com.Singhify.Singhify.Models.Orders;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CartRepo extends JpaRepository<Cart,Integer> {
-    Cart findByUser_UserId(long userId);
+public interface OrderRepo extends JpaRepository<Orders,Long> {
 
 }

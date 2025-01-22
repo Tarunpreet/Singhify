@@ -21,7 +21,7 @@ public class ProductDTO {
 
     private String productName;
 
-    private int quantity;
+    private int quantity=-1;
 
 
     private String productImage;

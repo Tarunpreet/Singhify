@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 @RestController
 @RequestMapping("/api")
 
-public class CategoriesController {
+public class  CategoriesController {
 
     @Autowired
     CategoriesServices categoriesServices;

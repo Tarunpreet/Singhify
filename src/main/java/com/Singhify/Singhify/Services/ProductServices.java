@@ -10,6 +10,7 @@ import com.Singhify.Singhify.Repos.CategoriesRepo;
 import com.Singhify.Singhify.Repos.ProductRepo;
 import com.Singhify.Singhify.Utilities.MappingData;
 import com.Singhify.Singhify.Utilities.PaginationValid;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -39,6 +40,9 @@ public class ProductServices {
     CategoriesRepo categoriesRepo;
     @Autowired
     MappingData<Product,ProductDTO> mappingProductData;
+
+    @Autowired
+    CartService cartService;
 
 
     public ProductDTO addProduct(Product product, MultipartFile imageFile, int categoryId) throws IOException {
@@ -161,6 +165,7 @@ public class ProductServices {
         return mappingProductData.mappingPageMetaData(productsPage,paginatedProductResponse);
 
     }
+    @Transactional
     public ProductDTO updateProduct(long productId, ProductDTO productDTO, MultipartFile imagefile) throws IOException {
         Product product=productRepo.findById(productId).
                 orElseThrow(()->new EntityNotFoundException("Product","id",productId));
@@ -175,6 +180,10 @@ public class ProductServices {
         {
             product.setPrice(productDTO.getPrice());
 
+        }
+        if(productDTO.getQuantity()!=-1)
+        {
+            product.setQuantity(productDTO.getQuantity());
         }
         String savedImage=product.getProductImage();
         if(imagefile!=null)
@@ -202,13 +211,18 @@ public class ProductServices {
         product.setSellingPrice(product.getPrice()-product.getDiscountAmt());
         product.setUpdatedAt(LocalDateTime.now());
         Product updatedProduct=productRepo.save(product);
+
+
+        cartService.updateProductInCart(updatedProduct);
+
         return mapper.map(updatedProduct,ProductDTO.class);
     }
 
+    @Transactional
     public void deleteProduct(long productId) {
         Product product=productRepo.findById(productId).
                 orElseThrow(()->new EntityNotFoundException("Product","id",productId));
-
+        cartService.deleteProductFromCart(product);
         productRepo.delete(product);
 
     }

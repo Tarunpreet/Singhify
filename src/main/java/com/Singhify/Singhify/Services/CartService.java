@@ -1,15 +1,15 @@
 package com.Singhify.Singhify.Services;
 
 import com.Singhify.Singhify.APIResponses.PaginatedAPIResponse;
-import com.Singhify.Singhify.Constants.AppConstants;
 import com.Singhify.Singhify.Data.DTO.CartDTO;
 import com.Singhify.Singhify.Data.DTO.CartItemDTO;
-import com.Singhify.Singhify.Data.DTO.ProductDTO;
 import com.Singhify.Singhify.Exception.EntityNotFoundException;
 import com.Singhify.Singhify.Models.Cart;
 import com.Singhify.Singhify.Models.CartItems;
+import com.Singhify.Singhify.Models.Product;
 import com.Singhify.Singhify.Models.Users;
 import com.Singhify.Singhify.Repos.CartRepo;
+import com.Singhify.Singhify.Repos.ProductRepo;
 import com.Singhify.Singhify.Utilities.MappingData;
 import com.Singhify.Singhify.Utilities.PaginationValid;
 import org.modelmapper.ModelMapper;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,7 +39,11 @@ public class CartService {
     CartDTO cartDTO;
     @Autowired
     List<CartItemDTO> cartItemsDTO;
+    @Autowired
+    ProductRepo productRepo;
 
+    @Autowired
+    PaginatedAPIResponse<CartItemDTO> paginatedAPIResponseCartItem;
 
     @Autowired
     private MappingData<CartItems, CartItemDTO> mappingData;
@@ -64,7 +67,8 @@ public class CartService {
                 .map(cartItem ->customMaptoDto(cartItem))
                 .toList();
 
-        cartDTO.setCartItemDtos(cartItemDTOList);
+        paginatedAPIResponseCartItem.setContent(cartItemDTOList);
+        cartDTO.setCartItemDtos(paginatedAPIResponseCartItem);
 
         return cartDTO;
 
@@ -91,7 +95,8 @@ public class CartService {
 
         mapper.map(savedCart,cartDTO);
 
-        cartDTO.setCartItemDtos(cartItemDTOList);
+        paginatedAPIResponseCartItem.setContent(cartItemDTOList);
+        cartDTO.setCartItemDtos(paginatedAPIResponseCartItem);
         return cartDTO;
 
     }
@@ -109,7 +114,8 @@ public class CartService {
 
         mapper.map(savedCart,cartDTO);
 
-        cartDTO.setCartItemDtos(cartItemDTOList);
+        paginatedAPIResponseCartItem.setContent(cartItemDTOList);
+        cartDTO.setCartItemDtos(paginatedAPIResponseCartItem);
         return cartDTO;
 
     }
@@ -127,7 +133,7 @@ public class CartService {
     }
     private Cart returnCartOrCreateNew(Users user,Boolean createNew)
     {
-        int userId=user.getUserId();
+        long userId=user.getUserId();
         Cart cart=cartRepo.findByUser_UserId(userId);
         if(cart==null)
         {
@@ -154,8 +160,8 @@ public class CartService {
         Cart savedCart=cartRepo.save(cart);
 
         mapper.map(savedCart,cartDTO);
-
-        cartDTO.setCartItemDtos(cartItemDTOList);
+        paginatedAPIResponseCartItem.setContent(cartItemDTOList);
+        cartDTO.setCartItemDtos(paginatedAPIResponseCartItem);
         return cartDTO;
 
     }
@@ -176,10 +182,31 @@ public class CartService {
         paginatedResponse.setContent(cartItemDTOList);
 
         // Add metadata using the utility method
-        mappingData.mappingPageMetaData(cartItemsPage, paginatedResponse);
+        paginatedResponse=mappingData.mappingPageMetaData(cartItemsPage, paginatedResponse);
         CartDTO cartDTO = mapper.map(cart, CartDTO.class);
         cartDTO.setCartItemDtos(paginatedResponse);
 
         return cartDTO;
+    }
+
+    public void updateProductInCart(Product product) {
+       List<Cart> updatedCarts=cartItemServices.updateProduct(product);
+        if(updatedCarts==null)
+        {
+            return;
+        }
+       updatedCarts.stream().forEach(cart -> cartRepo.save(cart));
+
+    }
+
+
+    public void deleteProductFromCart(Product product) {
+        List<Cart> updatedCarts=cartItemServices.deleteProduct(product);
+        if(updatedCarts==null)
+        {
+            return;
+        }
+        updatedCarts.stream().forEach(cart -> cartRepo.save(cart));
+
     }
 }

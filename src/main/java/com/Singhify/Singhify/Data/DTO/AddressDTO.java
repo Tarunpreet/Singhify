@@ -1,6 +1,9 @@
 package com.Singhify.Singhify.Data.DTO;
 
+import com.Singhify.Singhify.Enum.Country;
 import com.Singhify.Singhify.Enum.Roles;
+import com.Singhify.Singhify.Models.Users;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,33 +14,27 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class UserDTO {
+public class AddressDTO {
 
-    int userId;
+    long id;
 
-    String userName;
+    private long userId;
 
-    @Email
-    String UserEmail;
+    private Country country;
 
-    @NotNull
-    @Size(max = 10,min = 10)
-    String  userPhone;
+    private String state;
 
-    @NotNull
-    @NotBlank
-    @Size(max = 15,min = 5)
-    String  userPassword;
+    private String streetAdd; ;
 
-    private Set<Roles> userRoles=new HashSet<>();
+    private String city;
 
-    private List<AddressDTO> addressDTOS;
+    private String postalCode;
 
+    private String addressType;
 }
